@@ -1,0 +1,3 @@
+spring.application.name=SpringSecurityJdbc
+#spring.security.user.name=foo
+#spring.security.user.password=bar

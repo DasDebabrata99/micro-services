@@ -1,0 +1,5 @@
+package com.example.SecurityDemo.controller;
+
+public class SecurityConfiguration {
+
+}
