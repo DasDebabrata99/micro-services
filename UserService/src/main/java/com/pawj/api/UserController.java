@@ -11,6 +11,8 @@ import com.pawj.domain.Rating;
 import com.pawj.domain.User;
 import com.pawj.domain.User.UserBuilder;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @RestController
 public class UserController {
 
@@ -18,23 +20,23 @@ public class UserController {
 	RestTemplate restTemplate;
 	
 	@GetMapping("/users")
-	public User getUsers() {
-		
+	@CircuitBreaker(name="ratingBreaker", fallbackMethod = "ratingFallback")
+	public ResponseEntity<User> getUsers() {
 		User user = new User.UserBuilder("Deba").setAge(34).setGender("male").build();
 		user.setRating(getRating());
-		return user;
+		return  ResponseEntity.ok(user);
 	}
-	
-	public Rating getRating() {
-		
+	public ResponseEntity<User> ratingFallback(Exception ex){
+		System.out.println(ex.getMessage());
+		System.out.println("Fallback called.. loading dummy data");
+		User user = new User.UserBuilder("dummy_name").setAge(0).setGender("dummy").build();		
+		return ResponseEntity.ok(user);
+	}
+	public Rating getRating() {		
 		//String url = "http://localhost:8084/rating";
 		String url = "http://RATING-SERVICE/rating";
-		ResponseEntity<Rating> rs =  restTemplate.getForEntity(url,Rating.class);
-		
-		Rating rating =  rs.getBody();
-		
-		return rating;
-		
-		
+		ResponseEntity<Rating> rs =  restTemplate.getForEntity(url,Rating.class);		
+		Rating rating =  rs.getBody();		
+		return rating;		
 	}
 }
