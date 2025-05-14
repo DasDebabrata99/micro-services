@@ -13,6 +13,7 @@ import com.pawj.domain.User.UserBuilder;
 import com.pawj.services.RatingService;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 
 @RestController
@@ -26,7 +27,8 @@ public class UserController {
 	
 	@GetMapping("/users")
 	//@CircuitBreaker(name="ratingBreaker", fallbackMethod = "ratingFallback")
-	@Retry(name="ratingBreaker", fallbackMethod = "ratingFallback")
+	//@Retry(name="ratingRetry", fallbackMethod = "ratingFallback")
+	@RateLimiter(name="userLimiter", fallbackMethod = "ratingFallback")
 	public ResponseEntity<User> getUsers() {
 		User user = new User.UserBuilder("Deba").setAge(34).setGender("male").build();
 		user.setRating(getRatingUsingFeignClient());

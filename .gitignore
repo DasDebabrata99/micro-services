@@ -2,4 +2,5 @@
 /.metadata/
 .metadata/
 .RatingService/target/
-.UserService/target/
+UserService/target/
+*.class
